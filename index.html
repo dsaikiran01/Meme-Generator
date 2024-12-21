@@ -5,23 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Generator</title>
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+
+    <meta name="description" content="Create hilarious memes with ease! Upload your photos or use your camera to generate custom memes by adding text on top and bottom. Fast, fun, and fully responsive. Perfect for sharing with friends!">
+
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Meme Generator</h1>
-        <input type="file" id="imageInput" accept="image/*">
+        <h1>&#x1F4A5; Meme Generator &#x1F923;</h1>
+
+        <!-- theme toggler -->
+        <input type="checkbox" class="checkbox" id="checkbox">
+
+        <label for="checkbox" class="checkbox-label">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+            <span class="ball"></span>
+        </label>
+
+        <!-- input btns -->
         <div class="controls">
-            <input type="text" id="topText" placeholder="Enter Top Text" oninput="generateMeme()">
-            <input type="text" id="bottomText" placeholder="Enter Bottom Text" oninput="generateMeme()">
+            <input type="file" id="imageInput" accept="image/*">
+            <label for="imageInput" class="file-upload-btn">Choose an Image</label>
+            <span id="fileName"></span>
+            <button id="cameraBtn">Start Camera &#128247;</button>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="memeCanvas" width="580" height="450"></canvas>
+        </div>
+
+        <!-- meme generate btns -->
+        <div class="controls">
+            <input type="text" id="topText" placeholder="Enter Top Text">
+            <input type="text" id="bottomText" placeholder="Enter Bottom Text">
             <button id="generate" onclick="generateMeme()">Generate Meme</button>
             <button id="download" onclick="downloadMeme()">Download Meme</button>
         </div>
-        <canvas id="memeCanvas" width="580" height="450"></canvas>
     </div>
 
     <script src="script.js"></script>
+    <script src="theme-toggle.js"></script>
 </body>
 
 </html>

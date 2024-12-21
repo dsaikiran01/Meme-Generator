@@ -1,47 +1,234 @@
+/* Base Styles (Light Mode) */
+:root {
+    --background-color: #f0f0f0;
+    --text-color: #333;
+    --button-bg: #4CAF50;
+    --button-text-color: white;
+    --canvas-border-color: #ccc;
+    --input-bg: #fff;
+    --input-border-color: #ccc;
+    --input-text-color: #333;
+    --toggle-color: #111;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Dark Mode Variables */
+/* [data-theme="dark"] { */
+body.dark {
+    --background-color: #121212;
+    --text-color: #f0f0f0;
+    --button-bg: #00796b;
+    --button-text-color: white;
+    --canvas-border-color: #444;
+    --input-bg: #333;
+    --input-border-color: #555;
+    --input-text-color: #f0f0f0;
+    --toggle-color: #5a5a5a;
+}
+
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    width: 100%;
+    padding: 20px;
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 3rem;
 }
 
 .controls {
     margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-input[type="text"] {
-    padding: 10px;
-    margin: 10px;
-    width: 200px;
-    font-size: 16px;
-}
-
+input[type="text"],
 button {
     padding: 10px 20px;
     margin: 10px;
     font-size: 16px;
-    cursor: pointer;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--input-border-color);
+    background-color: var(--input-bg);
+    color: var(--input-text-color);
+    border-radius: 5px;
 }
 
-#captureBtn {
-    padding: 10px 20px;
+/* file upload btn */
+/* Hide the default file input */
+#imageInput {
+    display: none;
+    /* add drag and drop */
+    /* color: transparent;
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+    height: 45px;
+    width: 176px; */
+}
+
+.file-upload-btn {
+    display: inline-block;
+    background-color: #3498db;
+    color: #fff;
     font-size: 16px;
+    padding: 12px 25px;
+    border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+}
+
+.file-upload-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+.file-upload-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.6);
+}
+
+#fileName {
+    margin-top: 5px;
+}
+
+/* camera and other btns */
+button {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #388e3c;
 }
 
 canvas {
-    border: 1px solid #ccc;
+    border: 1px solid var(--canvas-border-color);
     margin-top: 20px;
+    max-width: 100%;
+    width: 100%;
+}
+
+#cameraBtn {
+    cursor: pointer;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin-top: 20px;
+}
+
+video {
+    display: none;
+    /* Hide the video element */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    input[type="text"],
+    button,
+    #imageInput {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 5px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    input[type="text"],
+    button,
+    #imageInput {
+        font-size: 14px;
+        width: 50%;
+    }
+
+    canvas {
+        max-width: 100%;
+    }
+}
+
+/* Theme Switcher Button */
+
+.checkbox {
+    opacity: 0;
+    position: absolute;
+}
+
+.checkbox-label {
+    background-color: var(--toggle-color);
+    width: 50px;
+    height: 26px;
+    border-radius: 50px;
+    position: relative;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fa-moon {
+    color: #f1c40f;
+}
+
+.fa-sun {
+    color: #f39c12;
+}
+
+.checkbox-label .ball {
+    background-color: #fff;
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    transition: transform 0.2s linear;
+}
+
+.checkbox:checked+.checkbox-label .ball {
+    transform: translateX(24px);
 }
