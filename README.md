@@ -14,7 +14,11 @@ Welcome to the **Meme Generator**! This fun web app allows you to create your ow
 ## 🎬 Demo
 
 Check out this awesome meme generator in action! 🎉  
-(Coming soon! Feel free to replace this with a link to a demo if you have one!)
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/f235016e-ec6b-4f81-a85f-c317c3b48b6f" alt="Meme Generator Demo">
+</p>
+
 
 ## 🛠️ Installation
 
