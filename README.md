@@ -78,11 +78,6 @@ We’d love for you to contribute to this meme-mazing project! Fork it, make imp
 
 Feel free to create issues for any bugs, improvements, or feature requests you have. Let’s make this the best meme generator ever! 🎉
 
-## 📜 License
-
-This project is open-source and available under the [MIT License](LICENSE).  
-Feel free to use it, remix it, and create awesome memes! 😎
-
 ## 🚀 Future Improvements
 
 1. **Theme According to Device Default**: Implement automatic theme selection based on the user's device default theme (light or dark mode).
