@@ -15,6 +15,24 @@ function applyStoredTheme() {
     }
 }
 
+// Apply theme based on preference in the device settings
+// more friendly for dark mode users
+function applyThemeBasedOnDevice(e) {
+    if (localStorage.getItem('theme') === 'light') {
+        if (e.matches) {
+            document.body.classList.remove('light');
+            document.body.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            checkbox.checked = true;
+        } else {
+            document.body.classList.remove('dark');
+            document.body.classList.add('light');
+            localStorage.setItem('theme', 'light');
+            checkbox.checked = false;
+        }
+    }
+}
+
 // Save theme in localStorage
 checkbox.addEventListener("change", () => {
     if (checkbox.checked) {
@@ -28,3 +46,6 @@ checkbox.addEventListener("change", () => {
 
 // Apply the theme when the page loads
 document.addEventListener('DOMContentLoaded', applyStoredTheme);
+
+// Listen for changes in the system theme preference
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => applyThemeBasedOnDevice(e));
