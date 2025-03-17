@@ -2,6 +2,11 @@
 
 Welcome to the **Meme Generator**! This fun web app allows you to create your own memes in just a few clicks! 😎 Whether you want to upload an image or snap a photo with your camera, you can easily add custom text and generate the ultimate meme to share with your friends. 😜
 
+Try it out now: [Meme Generator](https://dsaikiran01.github.io/Meme-Generator/)
+
+⭐️ **If you like this project, don't forget to give it a star!** ⭐️  
+It helps support the project and motivates to keep improving it!
+
 ## 🚀 Features
 
 - **Upload an Image** 📸: Upload any image from your device and start creating memes right away.
