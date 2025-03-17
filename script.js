@@ -1,7 +1,7 @@
 // Global variables
 let canvas = document.getElementById('memeCanvas');
 let ctx = canvas.getContext('2d');
-let img = null;
+let activeImage = null;
 let video = document.getElementById('cameraVideo');
 let stream = null;
 let isUsingCamera = false;
@@ -78,12 +78,13 @@ applyCanvasSize.addEventListener('click', () => {
     canvas.height = height;
     
     // Redraw the canvas
-    if (img) {
+    if (activeImage) {
         drawImageOnCanvas();
     } else {
         clearCanvas();
     }
 });
+
 
 // Image Upload
 const imageInput = document.getElementById('imageInput');
@@ -100,26 +101,42 @@ imageInput.addEventListener('change', function() {
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            img = new Image();
+            const img = new Image();
+            img.src = e.target.result;
+
             img.onload = function() {
+                activeImage = img;
+                video.style.display = 'none';
+                canvas.style.display = 'block';
                 drawImageOnCanvas();
             };
-            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
 });
 
+
 // Camera functionality
 const cameraBtn = document.getElementById('cameraBtn');
+const fileNameSpan = document.getElementById('fileName');
 
 cameraBtn.addEventListener('click', function() {
-    if (!isUsingCamera) {
-        startCamera();
+    fileNameSpan.textContent = '';
+    if (isUsingCamera) {
+        // Take picture from the video stream
+        captureImage();
+        cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+        video.style.display = 'none';
+        canvas.style.display = 'block';
+        imageInput.value = '';
     } else {
+        // Start the camera
         stopCamera();
+        imageInput.value = '';
+        startCamera();
     }
 });
+
 
 function startCamera() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -131,36 +148,51 @@ function startCamera() {
                 canvas.style.display = 'none';
                 video.play();
                 isUsingCamera = true;
-                cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Capture';
+                cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
             })
             .catch(function(err) {
+                isUsingCamera = false;
                 console.log("Error accessing camera: " + err);
                 alert("Error accessing camera. Please make sure you've granted permission.");
             });
     } else {
+        isUsingCamera = false;
         alert("Sorry, your browser doesn't support accessing the camera.");
     }
 }
+
 
 function stopCamera() {
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
     }
-    video.style.display = 'none';
-    canvas.style.display = 'block';
+    video.srcObject = null;
     isUsingCamera = false;
-    cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Camera';
+    cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
 }
 
+
 function captureImage() {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    img = new Image();
-    img.src = canvas.toDataURL('image/png');
+    // Get video dimensions
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+    
+    // Set canvas dimensions to match video
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+    
+    // Draw the video frame onto the canvas
+    ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+    
+    // Create image from canvas
+    activeImage = new Image();
+    activeImage.src = canvas.toDataURL('image/png');
+    
+    // Stop the camera
     stopCamera();
 }
+
 
 // Drawing Functions
 function clearCanvas() {
@@ -169,11 +201,14 @@ function clearCanvas() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+
 function drawImageOnCanvas() {
     clearCanvas();
     
+    if (!activeImage) return;
+    
     // Calculate aspect ratio
-    const imgRatio = img.width / img.height;
+    const imgRatio = activeImage.width / activeImage.height;
     const canvasRatio = canvas.width / canvas.height;
     
     let drawWidth, drawHeight, x, y;
@@ -192,8 +227,13 @@ function drawImageOnCanvas() {
         y = 0;
     }
     
-    ctx.drawImage(img, x, y, drawWidth, drawHeight);
+    // Clear the canvas
+    clearCanvas();
+    
+    // Draw the image
+    ctx.drawImage(activeImage, x, y, drawWidth, drawHeight);
 }
+
 
 // Generate Meme
 const topTextInput = document.getElementById('topText');
@@ -203,7 +243,7 @@ const generateBtn = document.getElementById('generate');
 generateBtn.addEventListener('click', generateMeme);
 
 function generateMeme() {
-    if (!img && !isUsingCamera) {
+    if (!activeImage && !isUsingCamera) {
         alert("Please upload an image or use the camera first.");
         return;
     }
@@ -240,6 +280,7 @@ function generateMeme() {
         wrapText(bottomText, canvas.width / 2, canvas.height - 20, canvas.width - 20, size, useStroke);
     }
 }
+
 
 // Text wrapping function
 function wrapText(text, x, y, maxWidth, lineHeight, useStroke) {
@@ -281,22 +322,38 @@ function wrapText(text, x, y, maxWidth, lineHeight, useStroke) {
     }
 }
 
+
+// calculate the present time
+function getCurrentDateTime() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is zero-based, so add 1
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}${month}${day}${hours}${minutes}${seconds}`;
+}
+
 // Download Meme
 const downloadBtn = document.getElementById('download');
 
 downloadBtn.addEventListener('click', downloadMeme);
 
 function downloadMeme() {
-    if (!img && !isUsingCamera) {
+    if (!activeImage && !isUsingCamera) {
         alert("Please generate a meme first.");
         return;
     }
     
     const link = document.createElement('a');
-    link.download = 'meme.png';
+    link.download = `meme-${getCurrentDateTime()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
 }
+
 
 // Initialize
 window.addEventListener('load', function() {
