@@ -7,44 +7,131 @@
     <title>Meme Generator</title>
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
 
-    <meta name="description" content="Create hilarious memes with ease! Upload your photos or use your camera to generate custom memes by adding text on top and bottom. Fast, fun, and fully responsive. Perfect for sharing with friends!">
+    <meta name="description"
+        content="Create hilarious memes with ease! Upload your photos or use your camera to generate custom memes by adding text on top and bottom. Fast, fun, and fully responsive. Perfect for sharing with friends!">
 
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>&#x1F4A5; Meme Generator &#x1F923;</h1>
-
-        <!-- theme toggler -->
-        <input type="checkbox" class="checkbox" id="checkbox">
-
-        <label for="checkbox" class="checkbox-label">
-            <i class="fas fa-moon"></i>
-            <i class="fas fa-sun"></i>
-            <span class="ball"></span>
-        </label>
-
-        <!-- input btns -->
-        <div class="controls">
-            <input type="file" id="imageInput" accept="image/*">
-            <label for="imageInput" class="file-upload-btn">Choose an Image</label>
-            <span id="fileName"></span>
-            <button id="cameraBtn">Start Camera &#128247;</button>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <h2>&#x1F4A5; Meme Generator</h2>
         </div>
-
-        <div class="canvas-container">
-            <canvas id="memeCanvas" width="580" height="450"></canvas>
+        <div class="theme-toggle">
+            <input type="checkbox" class="checkbox" id="checkbox">
+            <label for="checkbox" class="checkbox-label">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+                <span class="ball"></span>
+            </label>
+            <!-- reset btn adds here -->
         </div>
-
-        <!-- meme generate btns -->
-        <div class="controls">
-            <input type="text" id="topText" placeholder="Enter Top Text">
-            <input type="text" id="bottomText" placeholder="Enter Bottom Text">
-            <button id="generate" onclick="generateMeme()">Generate Meme</button>
-            <button id="download" onclick="downloadMeme()">Download Meme</button>
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
         </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Sidebar Menu (Desktop) / Top Menu (Mobile) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Customization</h3>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Text Style</h4>
+                <div class="option-group">
+                    <label for="textColor">Text Color:</label>
+                    <input type="color" id="textColor" value="#ffffff">
+                </div>
+
+                <div class="option-group">
+                    <label for="fontSize">Font Size:</label>
+                    <input type="range" id="fontSize" min="12" max="72" value="36">
+                    <span id="fontSizeValue">36px</span>
+                </div>
+
+                <div class="option-group">
+                    <label for="fontFamily">Font Family:</label>
+                    <select id="fontFamily">
+                        <option value="Impact">Impact</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="textStroke">Text Stroke:</label>
+                    <input type="checkbox" id="textStroke" checked>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Canvas Size</h4>
+                <div class="option-group">
+                    <label for="canvasWidth">Width:</label>
+                    <input type="number" id="canvasWidth" min="200" max="1200" value="580">
+                    <select id="widthUnit">
+                        <option value="px">px</option>
+                        <option value="cm">cm</option>
+                        <option value="in">in</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="canvasHeight">Height:</label>
+                    <input type="number" id="canvasHeight" min="200" max="1200" value="450">
+                    <select id="heightUnit">
+                        <option value="px">px</option>
+                        <option value="cm">cm</option>
+                        <option value="in">in</option>
+                    </select>
+                </div>
+
+                <button class="apply-btn" id="applyCanvasSize">Apply Size</button>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="controls">
+                <div class="file-controls">
+                    <input type="file" id="imageInput" accept="image/*">
+                    <label for="imageInput" class="file-upload-btn">
+                        <i class="fas fa-image"></i> Choose Image
+                    </label>
+                    <span id="fileName"></span>
+                    <button id="cameraBtn" class="camera-btn">
+                        <i class="fas fa-camera"></i> Camera
+                    </button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="memeCanvas" width="580" height="450"></canvas>
+                <video id="cameraVideo" width="580" height="450"></video>
+            </div>
+
+            <div class="text-controls">
+                <input type="text" id="topText" placeholder="Enter Top Text">
+                <input type="text" id="bottomText" placeholder="Enter Bottom Text">
+                <div class="action-buttons">
+                    <button id="generate" class="generate-btn">
+                        <i class="fas fa-magic"></i> Generate Meme
+                    </button>
+                    <button id="download" class="download-btn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="script.js"></script>
