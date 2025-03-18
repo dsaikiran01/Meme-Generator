@@ -314,6 +314,7 @@ button {
 .file-upload-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     background-color: var(--button-secondary);
     color: var(--button-text-color);
@@ -324,6 +325,7 @@ button {
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    text-align: center;
 }
 
 .file-upload-btn:hover {

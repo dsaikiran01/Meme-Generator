@@ -51,6 +51,10 @@ const widthUnit = document.getElementById('widthUnit');
 const heightUnit = document.getElementById('heightUnit');
 const applyCanvasSize = document.getElementById('applyCanvasSize');
 
+let maintainAspectRatio = document.getElementById('maintainAspectRatio');
+let defaultCanvasWidth = 580;
+let defaultCanvasHeight = 450;
+
 // Apply canvas size
 applyCanvasSize.addEventListener('click', () => {
     let width = parseInt(canvasWidth.value);
@@ -73,6 +77,22 @@ applyCanvasSize.addEventListener('click', () => {
     width = Math.max(200, Math.min(width, 1200));
     height = Math.max(200, Math.min(height, 1200));
     
+     // Maintain aspect ratio if checkbox is checked
+     if (maintainAspectRatio.checked && activeImage) {
+        const imgRatio = activeImage.width / activeImage.height;
+        // If width was changed last, adjust height to maintain ratio
+        if (width !== canvas.width) {
+            height = Math.round(width / imgRatio);
+        } else {
+            // If height was changed last, adjust width to maintain ratio
+            width = Math.round(height * imgRatio);
+        }
+        
+        // Update the input fields to reflect the adjusted values
+        canvasWidth.value = width;
+        canvasHeight.value = height;
+    }
+
     // Update canvas size
     canvas.width = width;
     canvas.height = height;
@@ -85,18 +105,45 @@ applyCanvasSize.addEventListener('click', () => {
     }
 });
 
+// Keep track of which dimension was changed last
+canvasWidth.addEventListener('change', function() {
+    if (maintainAspectRatio.checked && activeImage) {
+        const imgRatio = activeImage.width / activeImage.height;
+        const newHeight = Math.round(parseInt(canvasWidth.value) / imgRatio);
+        canvasHeight.value = newHeight;
+    }
+});
+
+canvasHeight.addEventListener('change', function() {
+    if (maintainAspectRatio.checked && activeImage) {
+        const imgRatio = activeImage.width / activeImage.height;
+        const newWidth = Math.round(parseInt(canvasHeight.value) * imgRatio);
+        canvasWidth.value = newWidth;
+    }
+});
+
 
 // Image Upload
 const imageInput = document.getElementById('imageInput');
 const fileName = document.getElementById('fileName');
 
+
+// Image Upload - Updated to set default canvas size based on image dimensions
 imageInput.addEventListener('change', function() {
     if (this.files && this.files[0]) {
+        const file = this.files[0];
+
+        // Validate file type (only allow .jpg and .png)
+        const fileType = file.type.toLowerCase();
+        if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
+            alert('Please upload a JPG or PNG image file.');
+            return; // Stop further processing if file is invalid
+        }
+
         if (isUsingCamera) {
             stopCamera();
         }
         
-        const file = this.files[0];
         fileName.textContent = file.name;
         
         const reader = new FileReader();
@@ -106,6 +153,40 @@ imageInput.addEventListener('change', function() {
 
             img.onload = function() {
                 activeImage = img;
+                
+                // Set canvas dimensions based on uploaded image size
+                // (capped at reasonable max dimensions)
+                const maxWidth = 1200;
+                const maxHeight = 1200;
+                
+                let newWidth = img.width;
+                let newHeight = img.height;
+                
+                // Scale down if image is too large
+                if (newWidth > maxWidth) {
+                    const ratio = maxWidth / newWidth;
+                    newWidth = maxWidth;
+                    newHeight = Math.floor(newHeight * ratio);
+                }
+                
+                if (newHeight > maxHeight) {
+                    const ratio = maxHeight / newHeight;
+                    newHeight = maxHeight;
+                    newWidth = Math.floor(newWidth * ratio);
+                }
+                
+                // Update canvas size
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                
+                // Update size input fields to match
+                canvasWidth.value = newWidth;
+                canvasHeight.value = newHeight;
+                
+                // Set units to px
+                widthUnit.value = 'px';
+                heightUnit.value = 'px';
+                
                 video.style.display = 'none';
                 canvas.style.display = 'block';
                 drawImageOnCanvas();
@@ -149,6 +230,20 @@ function startCamera() {
                 video.play();
                 isUsingCamera = true;
                 cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
+
+                // Set the size inputs to default camera values
+                canvasWidth.value = defaultCanvasWidth;
+                canvasHeight.value = defaultCanvasHeight;
+                widthUnit.value = 'px';
+                heightUnit.value = 'px';
+                
+                // Update canvas size to match video dimensions after the video loads
+                video.onloadedmetadata = function() {
+                    defaultCanvasWidth = video.videoWidth;
+                    defaultCanvasHeight = video.videoHeight;
+                    canvasWidth.value = defaultCanvasWidth;
+                    canvasHeight.value = defaultCanvasHeight;
+                };
             })
             .catch(function(err) {
                 isUsingCamera = false;
@@ -355,8 +450,10 @@ function downloadMeme() {
 }
 
 
-// Initialize
+// Initialize - save the original canvas dimensions
 window.addEventListener('load', function() {
     clearCanvas();
     fontSizeValue.textContent = `${fontSize.value}px`;
+    defaultCanvasWidth = canvas.width;
+    defaultCanvasHeight = canvas.height;
 });
