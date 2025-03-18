@@ -145,70 +145,71 @@ imageInput.addEventListener('change', function () {
 
         // Validate file type (only allow .jpg and .png)
         const fileType = file.type;
-        // if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
-        if (isValidFileType(fileType)) { }
-        alert('Please upload a supported image file (JPG, JPEG, PNG, WebP or SVG).');
-        return; // Stop further processing if file is invalid
-    }
+        if (!isValidFileType(fileType)) {
+            alert('Please upload a supported image file (JPG, JPEG, PNG, WebP or SVG).');
+            return;
+        }
 
-    // Reset camera state when uploading an image
-    if (isUsingCamera) {
-        stopCamera();
-    }
 
-    // Hide switch camera button when uploading an image
-    switchCameraBtn.style.display = 'none';
-    cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+        // Reset camera state when uploading an image
+        if (isUsingCamera) {
+            stopCamera();
+        }
 
-    fileName.textContent = file.name;
+        // Hide switch camera button when uploading an image
+        switchCameraBtn.style.display = 'none';
+        cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target.result;
+        fileName.textContent = file.name;
 
-        img.onload = function () {
-            activeImage = img;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.src = e.target.result;
 
-            // Set canvas dimensions based on uploaded image size
-            // (capped at reasonable max dimensions)
-            const maxWidth = 1200;
-            const maxHeight = 1200;
+            img.onload = function () {
+                activeImage = img;
 
-            let newWidth = img.width;
-            let newHeight = img.height;
+                // Set canvas dimensions based on uploaded image size
+                // (capped at reasonable max dimensions)
+                const maxWidth = 1200;
+                const maxHeight = 1200;
 
-            // Scale down if image is too large
-            if (newWidth > maxWidth) {
-                const ratio = maxWidth / newWidth;
-                newWidth = maxWidth;
-                newHeight = Math.floor(newHeight * ratio);
-            }
+                let newWidth = img.width;
+                let newHeight = img.height;
 
-            if (newHeight > maxHeight) {
-                const ratio = maxHeight / newHeight;
-                newHeight = maxHeight;
-                newWidth = Math.floor(newWidth * ratio);
-            }
+                // Scale down if image is too large
+                if (newWidth > maxWidth) {
+                    const ratio = maxWidth / newWidth;
+                    newWidth = maxWidth;
+                    newHeight = Math.floor(newHeight * ratio);
+                }
 
-            // Update canvas size
-            canvas.width = newWidth;
-            canvas.height = newHeight;
+                if (newHeight > maxHeight) {
+                    const ratio = maxHeight / newHeight;
+                    newHeight = maxHeight;
+                    newWidth = Math.floor(newWidth * ratio);
+                }
 
-            // Update size input fields to match
-            canvasWidth.value = newWidth;
-            canvasHeight.value = newHeight;
+                // Update canvas size
+                canvas.width = newWidth;
+                canvas.height = newHeight;
 
-            // Set units to px
-            widthUnit.value = 'px';
-            heightUnit.value = 'px';
+                // Update size input fields to match
+                canvasWidth.value = newWidth;
+                canvasHeight.value = newHeight;
 
-            video.style.display = 'none';
-            canvas.style.display = 'block';
-            drawImageOnCanvas();
+                // Set units to px
+                widthUnit.value = 'px';
+                heightUnit.value = 'px';
+
+                video.style.display = 'none';
+                canvas.style.display = 'block';
+                drawImageOnCanvas();
+            };
         };
-    };
-    reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+    }
 });
 
 // Camera functionality
