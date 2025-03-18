@@ -66,7 +66,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 2rem;
     background-color: var(--navbar-bg);
     box-shadow: 0 2px 5px var(--navbar-shadow);
     position: sticky;
@@ -158,6 +158,10 @@ body {
 
 .option-group span {
     margin-left: 10px;
+}
+
+.aspect-ratio-box {
+    margin-top: 10px;
 }
 
 /* Content */
@@ -470,6 +474,10 @@ input[type="color"] {
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     }
 
+    .sidebar > h3, h4 {
+        text-align: center;
+    }
+
     .sidebar.active {
         transform: translateX(0);
     }
@@ -523,6 +531,17 @@ input[type="color"] {
     .sidebar {
         width: 100%;
         max-width: none;
+    }
+
+    .sidebar > h3, h4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 400px) {
+    .sidebar-header {
+        padding-bottom: 0;
+        margin-bottom: 10px;
     }
 }
 
