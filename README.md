@@ -1,29 +1,31 @@
 # 🎉 Meme Generator 🤩
 
-Welcome to the **Meme Generator**! This fun web app allows you to create your own memes in just a few clicks! 😎 Whether you want to upload an image or snap a photo with your camera, you can easily add custom text and generate the ultimate meme to share with your friends. 😜
+Welcome to the **Meme Generator**! This fun web app allows you to create your own memes in just a few clicks! 😎 Whether you want to upload an image, snap a photo with your camera, or customize your meme with various fonts and colors, this app has got you covered. Create the ultimate meme and share it with your friends! 😜
 
 Try it out now: [Meme Generator](https://dsaikiran01.github.io/Meme-Generator/)
 
 ⭐️ **If you like this project, don't forget to give it a star!** ⭐️  
-It helps support the project and motivates to keep improving it!
+It helps support the project and motivates continuous improvements!
 
 ## 🚀 Features
 
 - **Upload an Image** 📸: Upload any image from your device and start creating memes right away.
 - **Take a Photo** 🤳: Open your camera and take a photo to create a meme on the fly!
 - **Add Custom Text** ✏️: Add hilarious or inspirational text to the top and bottom of your image.
+- **Choose Fonts and Colors** 🎨: Select from various fonts and colors to personalize your meme text.
+- **Resize Meme Canvas** 📐: Adjust the canvas size to fit your meme perfectly.
 - **Generate Meme** 💥: Watch your meme come to life with just one click!
-- **Download Meme** 🖼️: Download your masterpiece as a PNG file and share it with the world!
-- **Mobile & Desktop Friendly** 📱💻: Whether you're on your phone or desktop, this app is fully responsive!
+- **Download Meme** 🖼️: Save your masterpiece as a PNG file and share it with the world!
+- **Mobile & Desktop Friendly** 📱💻: Enjoy a fully responsive experience on both mobile and desktop devices.
+- **Dark/Light Theme Toggle** 🌗: Switch between dark and light themes to suit your preference.
 
 ## 🎬 Demo
 
-Check out this awesome meme generator in action! 🎉  
+Check out this awesome meme generator in action! 🎉
 
 <p align="center">
     <img src="https://github.com/user-attachments/assets/f235016e-ec6b-4f81-a85f-c317c3b48b6f" alt="Meme Generator Demo">
 </p>
-
 
 ## 🛠️ Installation
 
@@ -51,22 +53,32 @@ Want to try it out on your own machine? Here's how you can set it up:
 
 ## 📸 How to Use
 
-1. **Browse and Upload an Image** 🖼️: Click the **"Choose an Image"** button to select a photo from your device and watch it appear on the canvas.
+1. **Choose an Image** 🖼️:
+   - Click the **"Choose an Image"** button to select a photo from your device or **"Drag and Drop"** directly into image canvas.
+   - Alternatively, click the **"Start Camera"** button to activate your camera, then click **"Take Picture"** to capture a photo.
 
-2. **Start Camera** 📷: Hit the **"Start Camera"** button to activate your camera. The button will change to **"Take Picture"** once the camera is ready. Now take a picture and see it appear on the canvas.
+2. **Add Text** 📝:
+   - Enter your desired top and bottom text in the input fields. The text will automatically appear on your image.
 
-3. **Add Text** 📝: Add your top and bottom text in the input fields. The meme text will automatically appear on your image.
+3. **Customize Text** 🎨:
+   - Use the **"Font Family"** dropdown to select your preferred font.
+   - Use the **"Font Color"** input to choose a color for your text.
 
-4. **Generate Meme** 🤩: The meme is generated instantly after adding the text. No extra clicks needed!
+4. **Resize Canvas** 📐:
+   - Adjust the canvas size using the provided controls to fit your meme perfectly.
 
-5. **Download Your Meme** 💾: Once you're happy with your meme, just click **"Download Meme"** to save it to your device.
+5. **Generate Meme** 🤩:
+   - Your meme is generated instantly as you make changes. No extra clicks needed!
+
+6. **Download Your Meme** 💾:
+   - Once you're happy with your meme, click the **"Download Meme"** button to save it to your device.
 
 ## 🔧 Technologies Used
 
-- **HTML5** 🌐: The building blocks of the web!
-- **CSS3** 🎨: Styling to make it look pretty.
+- **HTML5** 🌐: The building blocks of the web.
+- **CSS3** 🎨: Styling to make it look appealing.
 - **JavaScript** 🖥️: Logic for all the meme-making fun.
-- **Canvas API** 🎨: For rendering images and text on the canvas like a pro!
+- **Canvas API** 🖌️: For rendering images and text on the canvas.
 
 ## 📂 Project Structure
 
@@ -74,11 +86,12 @@ Here’s a breakdown of the project’s structure:
 
 ```
 meme-generator/
-├── index.html           # The main page of the app
-├── style.css            # Where all the magic styling happens
-├── script.js            # The code behind the meme action
-├── theme-toggle.js      # The code behind the theme action
-└── README.md            # This document you’re reading right now 😊
+├── assets/               # Images and other assets
+├── index.html            # The main page of the app
+├── script.js             # The code behind the meme action
+├── styles.css            # Styling for the app
+├── theme-toggle.js       # Code for theme switching
+└── README.md             # This document you're reading 😊
 ```
 
 ## 🙌 Contributing
@@ -89,9 +102,10 @@ Feel free to create issues for any bugs, improvements, or feature requests you h
 
 ## 🚀 Future Improvements
 
-1. **Theme According to Device Default**: Implement automatic theme selection based on the user's device default theme (light or dark mode).
-2. **Choosing Fonts and Colors for Text**: Allow users to select different fonts and colors for text added on the image to enhance customization.
-3. **Resizing the Meme Canvas**: Provide an option to resize the meme canvas according to the user's preferences, offering more flexibility in meme creation.
-4. **Adding Camera Support to More Mobile Devices**: Expand camera support to include more mobile devices, making it easier for users to take pictures directly from the app.
-5. **Adding Support for Front and Back Cameras**: Expand camera support to allow both front and back cameras for users on mobile devices, improving flexibility for meme creation.
-6. **Drag and Drop Image Uploading**: Add a drag-and-drop feature for easier and more intuitive image uploads, allowing users to quickly upload their photos by dragging them into the app.
+1. **Text Wrapping in Meme Canvas**: Implement text wrapping functionality to ensure long text automatically moves to the next line within the canvas. [Reference](https://pqina.nl/blog/wrap-text-with-html-canvas/)
+2. **Image Cropping Functionality**: Add an image cropping feature to allow users to select specific parts of their images. [Reference](https://fengyuanchen.github.io/cropperjs/)
+3. **UI Enhancements**: Continuously improve the user interface for a more intuitive and enjoyable experience.
+
+---
+
+Enjoy creating memes and sharing the laughter! 😂 
