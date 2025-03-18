@@ -59,26 +59,26 @@ let defaultCanvasHeight = 450;
 applyCanvasSize.addEventListener('click', () => {
     let width = parseInt(canvasWidth.value);
     let height = parseInt(canvasHeight.value);
-    
+
     // Convert units if necessary
     if (widthUnit.value === 'cm') {
         width = Math.round(width * 37.8); // cm to px (approximate)
     } else if (widthUnit.value === 'in') {
         width = Math.round(width * 96); // inches to px
     }
-    
+
     if (heightUnit.value === 'cm') {
         height = Math.round(height * 37.8); // cm to px (approximate)
     } else if (heightUnit.value === 'in') {
         height = Math.round(height * 96); // inches to px
     }
-    
+
     // Set minimum and maximum values
     width = Math.max(200, Math.min(width, 1200));
     height = Math.max(200, Math.min(height, 1200));
-    
-     // Maintain aspect ratio if checkbox is checked
-     if (maintainAspectRatio.checked && activeImage) {
+
+    // Maintain aspect ratio if checkbox is checked
+    if (maintainAspectRatio.checked && activeImage) {
         const imgRatio = activeImage.width / activeImage.height;
         // If width was changed last, adjust height to maintain ratio
         if (width !== canvas.width) {
@@ -87,7 +87,7 @@ applyCanvasSize.addEventListener('click', () => {
             // If height was changed last, adjust width to maintain ratio
             width = Math.round(height * imgRatio);
         }
-        
+
         // Update the input fields to reflect the adjusted values
         canvasWidth.value = width;
         canvasHeight.value = height;
@@ -96,7 +96,7 @@ applyCanvasSize.addEventListener('click', () => {
     // Update canvas size
     canvas.width = width;
     canvas.height = height;
-    
+
     // Redraw the canvas
     if (activeImage) {
         drawImageOnCanvas();
@@ -106,7 +106,7 @@ applyCanvasSize.addEventListener('click', () => {
 });
 
 // Keep track of which dimension was changed last
-canvasWidth.addEventListener('change', function() {
+canvasWidth.addEventListener('change', function () {
     if (maintainAspectRatio.checked && activeImage) {
         const imgRatio = activeImage.width / activeImage.height;
         const newHeight = Math.round(parseInt(canvasWidth.value) / imgRatio);
@@ -114,7 +114,7 @@ canvasWidth.addEventListener('change', function() {
     }
 });
 
-canvasHeight.addEventListener('change', function() {
+canvasHeight.addEventListener('change', function () {
     if (maintainAspectRatio.checked && activeImage) {
         const imgRatio = activeImage.width / activeImage.height;
         const newWidth = Math.round(parseInt(canvasHeight.value) * imgRatio);
@@ -127,9 +127,8 @@ canvasHeight.addEventListener('change', function() {
 const imageInput = document.getElementById('imageInput');
 const fileName = document.getElementById('fileName');
 
-
 // Image Upload - Updated to set default canvas size based on image dimensions
-imageInput.addEventListener('change', function() {
+imageInput.addEventListener('change', function () {
     if (this.files && this.files[0]) {
         const file = this.files[0];
 
@@ -140,53 +139,58 @@ imageInput.addEventListener('change', function() {
             return; // Stop further processing if file is invalid
         }
 
+        // Reset camera state when uploading an image
         if (isUsingCamera) {
             stopCamera();
         }
         
+        // Hide switch camera button when uploading an image
+        switchCameraBtn.style.display = 'none';
+        cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+
         fileName.textContent = file.name;
-        
+
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const img = new Image();
             img.src = e.target.result;
 
-            img.onload = function() {
+            img.onload = function () {
                 activeImage = img;
-                
+
                 // Set canvas dimensions based on uploaded image size
                 // (capped at reasonable max dimensions)
                 const maxWidth = 1200;
                 const maxHeight = 1200;
-                
+
                 let newWidth = img.width;
                 let newHeight = img.height;
-                
+
                 // Scale down if image is too large
                 if (newWidth > maxWidth) {
                     const ratio = maxWidth / newWidth;
                     newWidth = maxWidth;
                     newHeight = Math.floor(newHeight * ratio);
                 }
-                
+
                 if (newHeight > maxHeight) {
                     const ratio = maxHeight / newHeight;
                     newHeight = maxHeight;
                     newWidth = Math.floor(newWidth * ratio);
                 }
-                
+
                 // Update canvas size
                 canvas.width = newWidth;
                 canvas.height = newHeight;
-                
+
                 // Update size input fields to match
                 canvasWidth.value = newWidth;
                 canvasHeight.value = newHeight;
-                
+
                 // Set units to px
                 widthUnit.value = 'px';
                 heightUnit.value = 'px';
-                
+
                 video.style.display = 'none';
                 canvas.style.display = 'block';
                 drawImageOnCanvas();
@@ -196,68 +200,129 @@ imageInput.addEventListener('change', function() {
     }
 });
 
-
 // Camera functionality
 const cameraBtn = document.getElementById('cameraBtn');
+const switchCameraBtn = document.getElementById('switchCameraBtn');
 const fileNameSpan = document.getElementById('fileName');
+let facingMode = "user";
 
-cameraBtn.addEventListener('click', function() {
-    fileNameSpan.textContent = '';
-    if (isUsingCamera) {
+cameraBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    
+    if (video.style.display === 'block') {
         // Take picture from the video stream
         captureImage();
-        cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+        this.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+        switchCameraBtn.style.display = 'none';
         video.style.display = 'none';
         canvas.style.display = 'block';
         imageInput.value = '';
     } else {
         // Start the camera
-        stopCamera();
+        fileNameSpan.textContent = '';
         imageInput.value = '';
         startCamera();
     }
 });
 
+// Add switch camera button handler
+switchCameraBtn.addEventListener('click', function () {
+    // Toggle between front and back camera
+    facingMode = facingMode === "user" ? "environment" : "user";
+    startCamera(); // Restart camera with new facing mode
+});
+
+// Function to check if device has multiple cameras (for mobile devices)
+async function hasMultipleCameras() {
+    // Only proceed if the mediaDevices API and enumerateDevices are supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+        return false;
+    }
+    
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        return videoDevices.length > 1;
+    } catch (err) {
+        console.error("Error checking for multiple cameras:", err);
+        return false;
+    }
+}
 
 function startCamera() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(mediaStream) {
-                stream = mediaStream;
-                video.srcObject = mediaStream;
-                video.style.display = 'block';
-                canvas.style.display = 'none';
-                video.play();
-                isUsingCamera = true;
-                cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
+        // Stop any existing stream first
+        if (stream) {
+            stopCamera();
+        }
 
-                // Set the size inputs to default camera values
+        // Initialize with switch camera button hidden
+        switchCameraBtn.style.display = 'none';
+
+        // remove any active selected image
+        activeImage = null;
+        
+        // Display video element and hide canvas
+        video.style.display = 'block';
+        document.getElementById('memeCanvas').style.display = 'none';
+
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: facingMode,
+                // width: { ideal: parseInt(document.getElementById('canvasWidth').value) },
+                // height: { ideal: parseInt(document.getElementById('canvasHeight').value) }
+            }
+        })
+        .then(function (mediaStream) {
+            stream = mediaStream;
+            video.srcObject = mediaStream;
+            video.style.display = 'block';
+            canvas.style.display = 'none';
+            video.play();
+            isUsingCamera = true;
+            cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
+
+            // Set the size inputs to default camera values
+            canvasWidth.value = defaultCanvasWidth;
+            canvasHeight.value = defaultCanvasHeight;
+            widthUnit.value = 'px';
+            heightUnit.value = 'px';
+
+            // Update canvas size to match video dimensions after the video loads
+            video.onloadedmetadata = function () {
+                defaultCanvasWidth = video.videoWidth;
+                defaultCanvasHeight = video.videoHeight;
                 canvasWidth.value = defaultCanvasWidth;
                 canvasHeight.value = defaultCanvasHeight;
-                widthUnit.value = 'px';
-                heightUnit.value = 'px';
-                
-                // Update canvas size to match video dimensions after the video loads
-                video.onloadedmetadata = function() {
-                    defaultCanvasWidth = video.videoWidth;
-                    defaultCanvasHeight = video.videoHeight;
-                    canvasWidth.value = defaultCanvasWidth;
-                    canvasHeight.value = defaultCanvasHeight;
-                };
-            })
-            .catch(function(err) {
-                isUsingCamera = false;
-                console.log("Error accessing camera: " + err);
-                alert("Error accessing camera. Please make sure you've granted permission.");
+            };
+            
+            // Check if device has multiple cameras and show switch button only if it does
+            hasMultipleCameras().then(hasMultiple => {
+                if (hasMultiple) {
+                    switchCameraBtn.style.display = 'block';
+                }
             });
+        })
+        .catch(function (err) {
+            isUsingCamera = false;
+            console.log("Error accessing camera: " + err);
+            alert("Error accessing camera. Please make sure you've granted permission.");
+            // Revert button text and hide switch camera button
+            cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+            switchCameraBtn.style.display = 'none';
+        });
     } else {
         isUsingCamera = false;
         alert("Sorry, your browser doesn't support accessing the camera.");
     }
 }
 
-
 function stopCamera() {
+    // Hide video element and show canvas
+    video.style.display = 'none';
+    switchCameraBtn.style.display = 'none';
+    document.getElementById('memeCanvas').style.display = 'block';
+
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
@@ -272,18 +337,18 @@ function captureImage() {
     // Get video dimensions
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
-    
+
     // Set canvas dimensions to match video
     canvas.width = videoWidth;
     canvas.height = videoHeight;
-    
+
     // Draw the video frame onto the canvas
     ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-    
+
     // Create image from canvas
     activeImage = new Image();
     activeImage.src = canvas.toDataURL('image/png');
-    
+
     // Stop the camera
     stopCamera();
 }
@@ -299,15 +364,15 @@ function clearCanvas() {
 
 function drawImageOnCanvas() {
     clearCanvas();
-    
+
     if (!activeImage) return;
-    
+
     // Calculate aspect ratio
     const imgRatio = activeImage.width / activeImage.height;
     const canvasRatio = canvas.width / canvas.height;
-    
+
     let drawWidth, drawHeight, x, y;
-    
+
     if (imgRatio > canvasRatio) {
         // Image is wider than canvas (relative to height)
         drawWidth = canvas.width;
@@ -321,10 +386,10 @@ function drawImageOnCanvas() {
         x = (canvas.width - drawWidth) / 2;
         y = 0;
     }
-    
+
     // Clear the canvas
     clearCanvas();
-    
+
     // Draw the image
     ctx.drawImage(activeImage, x, y, drawWidth, drawHeight);
 }
@@ -342,34 +407,39 @@ function generateMeme() {
         alert("Please upload an image or use the camera first.");
         return;
     }
-    
+
+    if (!activeImage) {
+        alert("Please upload an image or take a photo.");
+        return;
+    }
+
     if (isUsingCamera) {
         captureImage();
     }
-    
+
     // Redraw the image
     drawImageOnCanvas();
-    
+
     // Get text inputs
     const topText = topTextInput.value.toUpperCase();
     const bottomText = bottomTextInput.value.toUpperCase();
-    
+
     // Get style settings
     const color = textColor.value;
     const size = parseInt(fontSize.value);
     const font = fontFamily.value;
     const useStroke = textStroke.checked;
-    
+
     // Set text style
     ctx.textAlign = 'center';
     ctx.fillStyle = color;
     ctx.font = `bold ${size}px ${font}`;
-    
+
     // Draw top text
     if (topText) {
         wrapText(topText, canvas.width / 2, size + 10, canvas.width - 20, size, useStroke);
     }
-    
+
     // Draw bottom text
     if (bottomText) {
         wrapText(bottomText, canvas.width / 2, canvas.height - 20, canvas.width - 20, size, useStroke);
@@ -383,13 +453,13 @@ function wrapText(text, x, y, maxWidth, lineHeight, useStroke) {
     let line = '';
     let testLine = '';
     let lineArray = [];
-    
+
     // Break text into lines
     for (let n = 0; n < words.length; n++) {
         testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
         const testWidth = metrics.width;
-        
+
         if (testWidth > maxWidth && n > 0) {
             lineArray.push(line);
             line = words[n] + ' ';
@@ -397,14 +467,14 @@ function wrapText(text, x, y, maxWidth, lineHeight, useStroke) {
             line = testLine;
         }
     }
-    
+
     lineArray.push(line);
-    
+
     // For bottom text, move up to accommodate multiple lines
     if (y > canvas.height / 2) {
         y -= lineHeight * (lineArray.length - 1);
     }
-    
+
     // Draw each line
     for (let i = 0; i < lineArray.length; i++) {
         if (useStroke) {
@@ -442,7 +512,7 @@ function downloadMeme() {
         alert("Please generate a meme first.");
         return;
     }
-    
+
     const link = document.createElement('a');
     link.download = `meme-${getCurrentDateTime()}.png`;
     link.href = canvas.toDataURL('image/png');
@@ -451,7 +521,7 @@ function downloadMeme() {
 
 
 // Initialize - save the original canvas dimensions
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     clearCanvas();
     fontSizeValue.textContent = `${fontSize.value}px`;
     defaultCanvasWidth = canvas.width;
