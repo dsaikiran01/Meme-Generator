@@ -44,6 +44,25 @@ fontSize.addEventListener('input', () => {
     fontSizeValue.textContent = `${fontSize.value}px`;
 });
 
+// Add event listeners to text appearance controls
+textColor.addEventListener('input', updateMemeOnChange);
+fontSize.addEventListener('input', function () {
+    fontSizeValue.textContent = this.value + 'px';
+    updateMemeOnChange();
+});
+fontFamily.addEventListener('change', updateMemeOnChange);
+textStroke.addEventListener('change', updateMemeOnChange);
+
+// Function to update meme when text appearance controls change
+function updateMemeOnChange() {
+    if (activeImage || (canvas.width !== 0 && canvas.height !== 0)) {
+        // drawImageOnCanvas();
+        generateMeme();
+    } else {
+        alert("Please select an image first or click a pic before customizing text appearance.");
+    }
+}
+
 // Canvas Size Controls
 const canvasWidth = document.getElementById('canvasWidth');
 const canvasHeight = document.getElementById('canvasHeight');
@@ -61,16 +80,20 @@ applyCanvasSize.addEventListener('click', () => {
     let height = parseInt(canvasHeight.value);
 
     // Convert units if necessary
+    let finalWidth = width;
+    let finalHeight = height;
+
+    // Convert units if necessary
     if (widthUnit.value === 'cm') {
-        width = Math.round(width * 37.8); // cm to px (approximate)
+        finalWidth = Math.round(width * 37.8); // cm to px (approximate)
     } else if (widthUnit.value === 'in') {
-        width = Math.round(width * 96); // inches to px
+        finalWidth = Math.round(width * 96); // inches to px
     }
 
     if (heightUnit.value === 'cm') {
-        height = Math.round(height * 37.8); // cm to px (approximate)
+        finalHeight = Math.round(height * 37.8); // cm to px (approximate)
     } else if (heightUnit.value === 'in') {
-        height = Math.round(height * 96); // inches to px
+        finalHeight = Math.round(height * 96); // inches to px
     }
 
     // Set minimum and maximum values
@@ -94,12 +117,13 @@ applyCanvasSize.addEventListener('click', () => {
     }
 
     // Update canvas size
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = finalWidth;
+    canvas.height = finalHeight;
 
     // Redraw the canvas
     if (activeImage) {
-        drawImageOnCanvas();
+        // drawImageOnCanvas();
+        generateMeme();
     } else {
         clearCanvas();
     }
@@ -149,7 +173,6 @@ imageInput.addEventListener('change', function () {
             alert('Please upload a supported image file (JPG, JPEG, PNG, WebP or SVG).');
             return;
         }
-
 
         // Reset camera state when uploading an image
         if (isUsingCamera) {
@@ -689,6 +712,8 @@ function downloadMeme() {
 window.addEventListener('load', function () {
     clearCanvas();
     fontSizeValue.textContent = `${fontSize.value}px`;
+    topTextInput.value = '';
+    bottomTextInput.value = '';
     defaultCanvasWidth = canvas.width;
     defaultCanvasHeight = canvas.height;
 });
