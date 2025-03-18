@@ -1,8 +1,8 @@
 // Global variables
-let canvas = document.getElementById('memeCanvas');
-let ctx = canvas.getContext('2d');
+const canvas = document.getElementById('memeCanvas');
+const ctx = canvas.getContext('2d');
 let activeImage = null;
-let video = document.getElementById('cameraVideo');
+const video = document.getElementById('cameraVideo');
 let stream = null;
 let isUsingCamera = false;
 
@@ -127,77 +127,88 @@ canvasHeight.addEventListener('change', function () {
 const imageInput = document.getElementById('imageInput');
 const fileName = document.getElementById('fileName');
 
+// check if uploaded files are valid formats
+function isValidFileType(filetype) {
+    const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+
+    if (supportedTypes.includes(filetype.toLowerCase())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Image Upload - Updated to set default canvas size based on image dimensions
 imageInput.addEventListener('change', function () {
     if (this.files && this.files[0]) {
         const file = this.files[0];
 
         // Validate file type (only allow .jpg and .png)
-        const fileType = file.type.toLowerCase();
-        if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
-            alert('Please upload a JPG or PNG image file.');
-            return; // Stop further processing if file is invalid
-        }
-
-        // Reset camera state when uploading an image
-        if (isUsingCamera) {
-            stopCamera();
-        }
-        
-        // Hide switch camera button when uploading an image
-        switchCameraBtn.style.display = 'none';
-        cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
-
-        fileName.textContent = file.name;
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.src = e.target.result;
-
-            img.onload = function () {
-                activeImage = img;
-
-                // Set canvas dimensions based on uploaded image size
-                // (capped at reasonable max dimensions)
-                const maxWidth = 1200;
-                const maxHeight = 1200;
-
-                let newWidth = img.width;
-                let newHeight = img.height;
-
-                // Scale down if image is too large
-                if (newWidth > maxWidth) {
-                    const ratio = maxWidth / newWidth;
-                    newWidth = maxWidth;
-                    newHeight = Math.floor(newHeight * ratio);
-                }
-
-                if (newHeight > maxHeight) {
-                    const ratio = maxHeight / newHeight;
-                    newHeight = maxHeight;
-                    newWidth = Math.floor(newWidth * ratio);
-                }
-
-                // Update canvas size
-                canvas.width = newWidth;
-                canvas.height = newHeight;
-
-                // Update size input fields to match
-                canvasWidth.value = newWidth;
-                canvasHeight.value = newHeight;
-
-                // Set units to px
-                widthUnit.value = 'px';
-                heightUnit.value = 'px';
-
-                video.style.display = 'none';
-                canvas.style.display = 'block';
-                drawImageOnCanvas();
-            };
-        };
-        reader.readAsDataURL(file);
+        const fileType = file.type;
+        // if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
+        if (isValidFileType(fileType)) { }
+        alert('Please upload a supported image file (JPG, JPEG, PNG, WebP or SVG).');
+        return; // Stop further processing if file is invalid
     }
+
+    // Reset camera state when uploading an image
+    if (isUsingCamera) {
+        stopCamera();
+    }
+
+    // Hide switch camera button when uploading an image
+    switchCameraBtn.style.display = 'none';
+    cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+
+    fileName.textContent = file.name;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = function () {
+            activeImage = img;
+
+            // Set canvas dimensions based on uploaded image size
+            // (capped at reasonable max dimensions)
+            const maxWidth = 1200;
+            const maxHeight = 1200;
+
+            let newWidth = img.width;
+            let newHeight = img.height;
+
+            // Scale down if image is too large
+            if (newWidth > maxWidth) {
+                const ratio = maxWidth / newWidth;
+                newWidth = maxWidth;
+                newHeight = Math.floor(newHeight * ratio);
+            }
+
+            if (newHeight > maxHeight) {
+                const ratio = maxHeight / newHeight;
+                newHeight = maxHeight;
+                newWidth = Math.floor(newWidth * ratio);
+            }
+
+            // Update canvas size
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            // Update size input fields to match
+            canvasWidth.value = newWidth;
+            canvasHeight.value = newHeight;
+
+            // Set units to px
+            widthUnit.value = 'px';
+            heightUnit.value = 'px';
+
+            video.style.display = 'none';
+            canvas.style.display = 'block';
+            drawImageOnCanvas();
+        };
+    };
+    reader.readAsDataURL(file);
 });
 
 // Camera functionality
@@ -208,7 +219,7 @@ let facingMode = "user";
 
 cameraBtn.addEventListener('click', function (e) {
     e.preventDefault();
-    
+
     if (video.style.display === 'block') {
         // Take picture from the video stream
         captureImage();
@@ -238,7 +249,7 @@ async function hasMultipleCameras() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         return false;
     }
-    
+
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
@@ -261,7 +272,7 @@ function startCamera() {
 
         // remove any active selected image
         activeImage = null;
-        
+
         // Display video element and hide canvas
         video.style.display = 'block';
         document.getElementById('memeCanvas').style.display = 'none';
@@ -269,48 +280,46 @@ function startCamera() {
         navigator.mediaDevices.getUserMedia({
             video: {
                 facingMode: facingMode,
-                // width: { ideal: parseInt(document.getElementById('canvasWidth').value) },
-                // height: { ideal: parseInt(document.getElementById('canvasHeight').value) }
             }
         })
-        .then(function (mediaStream) {
-            stream = mediaStream;
-            video.srcObject = mediaStream;
-            video.style.display = 'block';
-            canvas.style.display = 'none';
-            video.play();
-            isUsingCamera = true;
-            cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
+            .then(function (mediaStream) {
+                stream = mediaStream;
+                video.srcObject = mediaStream;
+                video.style.display = 'block';
+                canvas.style.display = 'none';
+                video.play();
+                isUsingCamera = true;
+                cameraBtn.innerHTML = '<i class="fas fa-camera-retro"></i> Take Picture';
 
-            // Set the size inputs to default camera values
-            canvasWidth.value = defaultCanvasWidth;
-            canvasHeight.value = defaultCanvasHeight;
-            widthUnit.value = 'px';
-            heightUnit.value = 'px';
-
-            // Update canvas size to match video dimensions after the video loads
-            video.onloadedmetadata = function () {
-                defaultCanvasWidth = video.videoWidth;
-                defaultCanvasHeight = video.videoHeight;
+                // Set the size inputs to default camera values
                 canvasWidth.value = defaultCanvasWidth;
                 canvasHeight.value = defaultCanvasHeight;
-            };
-            
-            // Check if device has multiple cameras and show switch button only if it does
-            hasMultipleCameras().then(hasMultiple => {
-                if (hasMultiple) {
-                    switchCameraBtn.style.display = 'block';
-                }
+                widthUnit.value = 'px';
+                heightUnit.value = 'px';
+
+                // Update canvas size to match video dimensions after the video loads
+                video.onloadedmetadata = function () {
+                    defaultCanvasWidth = video.videoWidth;
+                    defaultCanvasHeight = video.videoHeight;
+                    canvasWidth.value = defaultCanvasWidth;
+                    canvasHeight.value = defaultCanvasHeight;
+                };
+
+                // Check if device has multiple cameras and show switch button only if it does
+                hasMultipleCameras().then(hasMultiple => {
+                    if (hasMultiple) {
+                        switchCameraBtn.style.display = 'block';
+                    }
+                });
+            })
+            .catch(function (err) {
+                isUsingCamera = false;
+                console.log("Error accessing camera: " + err);
+                alert("Error accessing camera. Please make sure you've granted permission.");
+                // Revert button text and hide switch camera button
+                cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+                switchCameraBtn.style.display = 'none';
             });
-        })
-        .catch(function (err) {
-            isUsingCamera = false;
-            console.log("Error accessing camera: " + err);
-            alert("Error accessing camera. Please make sure you've granted permission.");
-            // Revert button text and hide switch camera button
-            cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
-            switchCameraBtn.style.display = 'none';
-        });
     } else {
         isUsingCamera = false;
         alert("Sorry, your browser doesn't support accessing the camera.");
@@ -392,6 +401,161 @@ function drawImageOnCanvas() {
 
     // Draw the image
     ctx.drawImage(activeImage, x, y, drawWidth, drawHeight);
+}
+
+
+// Drag and drop functionality
+const dropZone = document.getElementById('dropZone');
+const dropMessage = document.getElementById('dropMessage');
+
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+});
+
+// Highlight drop zone when item is dragged over it
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+// Handle drop event
+dropZone.addEventListener('drop', handleDrop, false);
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function highlight() {
+    dropZone.classList.add('drag-over');
+}
+
+function unhighlight() {
+    dropZone.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    if (files.length) {
+        const file = files[0];
+
+        // Check if file is a supported image type
+        const fileType = file.type;
+
+        if (isValidFileType(fileType)) {
+            // Reset camera if it's active
+            if (isUsingCamera) {
+                stopCamera();
+            }
+
+            // Hide switch camera button
+            switchCameraBtn.style.display = 'none';
+            cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+
+            // Update file name display
+            fileName.textContent = file.name;
+
+            // Process the file
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    // Set activeImage to the new image
+                    activeImage = img;
+
+                    // Set canvas dimensions based on uploaded image size
+                    // (capped at reasonable max dimensions)
+                    const maxWidth = 1200;
+                    const maxHeight = 1200;
+
+                    let newWidth = img.width;
+                    let newHeight = img.height;
+
+                    // Scale down if image is too large
+                    if (newWidth > maxWidth) {
+                        const ratio = maxWidth / newWidth;
+                        newWidth = maxWidth;
+                        newHeight = Math.floor(newHeight * ratio);
+                    }
+
+                    if (newHeight > maxHeight) {
+                        const ratio = maxHeight / newHeight;
+                        newHeight = maxHeight;
+                        newWidth = Math.floor(newWidth * ratio);
+                    }
+
+                    // Update canvas size
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+
+                    // Update size input fields to match
+                    canvasWidth.value = newWidth;
+                    canvasHeight.value = newHeight;
+
+                    // Set units to px
+                    widthUnit.value = 'px';
+                    heightUnit.value = 'px';
+
+                    // Make sure canvas is visible
+                    video.style.display = 'none';
+                    canvas.style.display = 'block';
+
+                    // Draw the image on the canvas
+                    drawImageOnCanvas();
+                };
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload a supported image file (JPG, JPEG, PNG, WebP or SVG).');
+        }
+    }
+}
+
+function processFile(file) {
+    // Update file name display
+    document.getElementById('fileName').textContent = file.name;
+
+    // Create a FileReader to read the image
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            // Clear any previous content
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the image on the canvas
+            drawImageScaled(img, ctx, canvas);
+
+            // Make sure canvas is visible (in case camera was on)
+            stopCamera();
+            canvas.style.display = 'block';
+
+            // Reset camera button text
+            document.getElementById('cameraBtn').innerHTML = '<i class="fas fa-camera"></i> Start Camera';
+            document.getElementById('switchCameraBtn').style.display = 'none';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Helper function to draw the image scaled to fit
+function drawImageScaled(img, ctx, canvas) {
+    const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+    const centerX = (canvas.width - img.width * ratio) / 2;
+    const centerY = (canvas.height - img.height * ratio) / 2;
+
+    ctx.drawImage(img, 0, 0, img.width, img.height,
+        centerX, centerY, img.width * ratio, img.height * ratio);
 }
 
 
