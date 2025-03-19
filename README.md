@@ -146,9 +146,11 @@ By following these steps, you help maintain the project's integrity and facilita
 
 ## 🚀 Future Improvements
 
-1. **Text Wrapping in Meme Canvas**: Implement text wrapping functionality to ensure long text automatically moves to the next line within the canvas. [Reference](https://pqina.nl/blog/wrap-text-with-html-canvas/)
-2. **Image Cropping Functionality**: Add an image cropping feature to allow users to select specific parts of their images. [Reference](https://fengyuanchen.github.io/cropperjs/)
+1. **Text Wrapping in Meme Canvas**: Implement text wrapping functionality to ensure long text automatically moves to the next line within the canvas.
+2. **Image Cropping Functionality**: Add an image cropping feature to allow users to select specific parts of their images.
 3. **UI Enhancements**: Continuously improve the user interface for a more intuitive and enjoyable experience.
+4. **Download Various File Formats**: Allow users to download their memes in different file formats (e.g., PNG, JPEG, GIF) to suit their preferences and use cases.
+5. **Maintain Image Clarity**: Ensure that meme images retain their high quality and clarity, even when resized or downloaded, without losing resolution or detail.
 
 ---
 
